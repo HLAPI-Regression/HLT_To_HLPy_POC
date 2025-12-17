@@ -1,0 +1,40 @@
+"""Configuration script for Ixia HLT API testing.
+
+This script demonstrates connecting to an IxNetwork server, reserving ports,
+and configuring traffic using the Ixia High Level Traffic (HLT) API.
+Supports both Python and Tcl execution modes.
+"""
+
+from tkinter import Tcl, TclError
+from helper import init_hl_package, execute_python, execute_tcl
+
+
+def main(module):
+    """Main function to initialize and execute Ixia test configuration.
+    
+    This function connects to an IxNetwork server, reserves ports, and
+    configures L2 traffic between endpoints.
+    
+    Args:
+        module: The execution mode - either "tcl" or "python".
+    """
+    init_hl_package(module)
+    # monkey patch execute function based on the module
+    if module == "tcl":
+        execute = execute_tcl
+    elif module == "python":
+        execute = execute_python
+
+    print("\n\n")
+    result = execute("::ixia::connect", "-ixnetwork_tcl_server 10.74.45.143:8009 -device xgshs-606488.ccu.is.keysight.com -port_list {2/1 2/2} -break_locks 1 -reset 1")
+    print("result = ", result)
+
+
+    print("\n\n")
+    result = execute("::ixia::traffic_config", "-mode create -traffic_generator ixnetwork -circuit_type raw -name HL-L2 -endpointset_count 1 -emulation_src_handle {1/2/1} -emulation_dst_handle {1/2/2} -src_dest_mesh one_to_one -route_mesh one_to_one -bidirectional 1 -rate_percent 10 -frame_size 512")
+    print("result = ", result)
+    print("Done")
+
+
+if __name__ == "__main__":
+    main(module="python")
