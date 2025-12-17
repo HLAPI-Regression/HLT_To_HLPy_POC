@@ -1,9 +1,9 @@
 # HLT_To_HLPy_POC
-Repo just to show-case a small POC for conversion of HLT scripts to HLPy scripts without much change
+Repo just to demonestrate a small POC for conversion of a simple HLT (**H**igh **L**evel **T**CL ) scripts to HLPy (**H**igh **L**evel **Py**thon) scripts without much change
 
 ## Purpose
 
-This proof-of-concept demonstrates how you can seamlessly switch between HLT and HLPy implementations by simply changing the helper functions. The main configuration code remains unchanged - only the underlying helper implementation needs to be swapped to transition from HLT to HLPy usage.
+This proof-of-concept demonstrates how you user can switch between HLT and HLPy implementations by simply changing the helper functions. The main configuration code remains unchanged - only the underlying helper implementation needs to be swapped to transition from HLT to HLPy usage.
 
 ## How to Run
 
