@@ -5,11 +5,15 @@ It supports both Python and Tcl interfaces, handles command execution, and provi
 parsing utilities for Tcl data structures (lists and dictionaries).
 """
 
-import sys, os
+import sys, os, requests, json
 from tkinter import Tcl, TclError
 
 ixn_ngpf = None
 ixn_hlt  = None
+server = "http://localhost:8000/"
+headers = {
+    "Content-Type": "application/json",
+}
 
 tcl = Tcl()
 
@@ -83,6 +87,12 @@ def init_hl_package(module: str):
         ixn_ngpf = IxiaNgpf(ixn_hlt)
     elif module == "tcl":
         eval_cmd("package require Ixia")
+    elif module == "isolated_tcl":
+        resp = requests.post(server + "/init", headers=headers)
+        if resp.status_code != 200:
+            raise Exception(f"Failed to initialize remote Tcl server: {resp.text}")
+        else:
+            print(resp.content)
 
 def get_hlapi_method(name_space: str, func: str):
     """Retrieve a method from the specified HLAPI namespace.
@@ -315,4 +325,24 @@ def execute_python(command, args):
         arg_dict[key] = val
     print(f"Parsed arguments: {arg_dict}")
     result = method(**arg_dict)
+    return result
+
+def execute_tcl_endpoint(command: str, args: str):
+    """Execute a Tcl command on an isolated Tcl server endpoint.
+    
+    Sends the command and arguments to a remote Tcl server via HTTP POST request.
+    
+    Args:
+        command: The Tcl command to execute.
+        args: The arguments to pass to the command.
+    """
+    full_command = command + " " + args
+    payload = {
+        "command": full_command
+    }
+    print(f"Sending command to remote Tcl server: {full_command} on url: {server}/execute")
+    response = requests.post(server + "/execute", headers=headers, data=json.dumps(payload))
+    if response.status_code != 200:
+        raise Exception(f"Failed to execute command on remote Tcl server: {response.text}")
+    result = response.json().get("result", "")
     return result

@@ -29,6 +29,12 @@ if __name__ == "__main__":
     main(module="tcl")
 ```
 
+**For Tcl/HLT execution:**
+```python
+if __name__ == "__main__":
+    main(module="isolated_tcl")
+```
+
 ### Example Output (Tcl/HLT Mode)
 
 When running with `module="tcl"`, the output shows HLT running in the background:
@@ -88,5 +94,25 @@ Executing command: ::ixia::traffic_config with arguments: -mode create -traffic_
 Resolved namespace: ixia, function: traffic_config
 Parsed arguments: {'mode': 'create', 'traffic_generator': 'ixnetwork', 'circuit_type': 'raw', 'name': 'HL-L2', 'endpointset_count': 1, 'emulation_src_handle': ['1/2/1'], 'emulation_dst_handle': ['1/2/2'], 'src_dest_mesh': 'one_to_one', 'route_mesh': 'one_to_one', 'bidirectional': 1, 'rate_percent': 10, 'frame_size': 512}
 result =  {'status': '1', 'log': '', 'stream_id': 'TI0-HL-L2', 'traffic_item': '::ixNet::OBJ-/traffic/trafficItem:1/configElement:1', '::ixNet::OBJ-/traffic/trafficItem:1/configElement:1': {'headers': '::ixNet::OBJ-/traffic/trafficItem:1/configElement:1/stack:"ethernet-1" ::ixNet::OBJ-/traffic/trafficItem:1/configElement:1/stack:"fcs-2"', 'stream_ids': '::ixNet::OBJ-/traffic/trafficItem:1/highLevelStream:1', '::ixNet::OBJ-/traffic/trafficItem:1/highLevelStream:1': {'headers': '::ixNet::OBJ-/traffic/trafficItem:1/highLevelStream:1/stack:"ethernet-1" ::ixNet::OBJ-/traffic/trafficItem:1/highLevelStream:1/stack:"fcs-2"'}, 'endpoint_set_id': '1', 'encapsulation_name': 'Ethernet'}}
+Done
+```
+
+### Example Output (Isolated TCL/ HLT mode)
+
+When running with `module="isolated_tcl"`, the output showcases commands are sent to some isolated envs which execute the commands:
+
+```
+python3 cfg.py      
+b'{"message":"Tcl package initialized"}\n'
+
+
+
+Sending command to remote Tcl server: ::ixia::connect -ixnetwork_tcl_server 10.39.47.41:8012 -device xgshs-606488.ccu.is.keysight.com -port_list {2/1 2/2} -break_locks 1 -reset 1 on url: http://localhost:8000//execute
+result =  {port_handle {{10 {{39 {{51 {{204 {{2/1 1/2/1} {2/2 1/2/2}}}}}}}}} {xgshs-606488 {{ccu {{is {{keysight {{com {{2/1 1/2/1} {2/2 1/2/2}}}}}}}}}}}}} {connection {{tcl_port 8012} {using_tcl_proxy 0} {server_version 11.00.2504.10} {port 8012} {chassis {{xgshs-606488 {{ccu {{is {{keysight {{com {{hostname xgshs-606488.ccu.is.keysight.com} {ip 10.39.51.204} {chassis_protocols_version Ignored} {chassis_type {Ixia XGS2}} {chassis_version {IxOS 10.80.8001.21 Patch2}} {is_master_chassis 1} {chain_type daisy} {chassis_chain {{sequence_id 1}}}}}}}}}}}}}}} {client_version 26.0.2601.6} {username IxNetwork/1UAC-X0670812/ixnetwork-1348} {hostname 1UAC-X0670812} {license {{server localhost} {type aggregation}}}}} {vport_list {1/2/1 1/2/2}} {vport_protocols_handle {::ixNet::OBJ-/vport:1/protocols ::ixNet::OBJ-/vport:2/protocols}} {guardrail_messages {{1 {MESSAGE: Guardrails Monitor - IxNetwork was unable to establish a successful connection with IxMonitor service. Guard Rails resource monitoring is deactivated.}} {2 {WARNING: IxNetwork main module errors - Ignore Version Registry Key is Enabled.}} {3 {MESSAGE: StatViewer Guardrail Info - The statistics Guard Rail option is designed to protect you from adding too many statistics. It is recommended to keep this option enabled, in order to prevent inaccurate statistics while running large scale tests.}}}} {status 1}
+
+
+
+Sending command to remote Tcl server: ::ixia::traffic_config -mode create -traffic_generator ixnetwork -circuit_type raw -name HL-L2 -endpointset_count 1 -emulation_src_handle {1/2/1} -emulation_dst_handle {1/2/2} -src_dest_mesh one_to_one -route_mesh one_to_one -bidirectional 1 -rate_percent 10 -frame_size 512 on url: http://localhost:8000//execute
+result =  {status 1} {log {}} {stream_id TI0-HL-L2} {traffic_item ::ixNet::OBJ-/traffic/trafficItem:1/configElement:1} {::ixNet::OBJ-/traffic/trafficItem:1/configElement:1 {{headers {::ixNet::OBJ-/traffic/trafficItem:1/configElement:1/stack:"ethernet-1" ::ixNet::OBJ-/traffic/trafficItem:1/configElement:1/stack:"fcs-2"}} {stream_ids ::ixNet::OBJ-/traffic/trafficItem:1/highLevelStream:1} {::ixNet::OBJ-/traffic/trafficItem:1/highLevelStream:1 {{headers {::ixNet::OBJ-/traffic/trafficItem:1/highLevelStream:1/stack:"ethernet-1" ::ixNet::OBJ-/traffic/trafficItem:1/highLevelStream:1/stack:"fcs-2"}}}} {endpoint_set_id 1} {encapsulation_name Ethernet}}}
 Done
 ```

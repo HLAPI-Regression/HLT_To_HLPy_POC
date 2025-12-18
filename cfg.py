@@ -6,7 +6,7 @@ Supports both Python and Tcl execution modes.
 """
 
 from tkinter import Tcl, TclError
-from helper import init_hl_package, execute_python, execute_tcl
+from helper import init_hl_package, execute_python, execute_tcl, execute_tcl_endpoint
 
 
 def main(module):
@@ -24,9 +24,11 @@ def main(module):
         execute = execute_tcl
     elif module == "python":
         execute = execute_python
+    elif module == "isolated_tcl":
+        execute = execute_tcl_endpoint
 
     print("\n\n")
-    result = execute("::ixia::connect", "-ixnetwork_tcl_server 10.74.45.143:8009 -device xgshs-606488.ccu.is.keysight.com -port_list {2/1 2/2} -break_locks 1 -reset 1")
+    result = execute("::ixia::connect", "-ixnetwork_tcl_server 10.39.47.41:8012 -device xgshs-606488.ccu.is.keysight.com -port_list {2/1 2/2} -break_locks 1 -reset 1")
     print("result = ", result)
 
 
@@ -37,4 +39,4 @@ def main(module):
 
 
 if __name__ == "__main__":
-    main(module="python")
+    main(module="isolated_tcl")
