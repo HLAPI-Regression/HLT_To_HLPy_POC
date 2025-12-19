@@ -15,29 +15,30 @@ python cfg.py
 
 ### Testing Different Execution Paths
 
-To switch between Python (HLPy) and Tcl (HLT) execution paths, modify the `main` function call at the bottom of [cfg.py](cfg.py):
+`cfg.py` accepts a command-line argument to select the execution module. The flag is `-impl` or `--implementation` and defaults to `tcl`.
 
-**For Python/HLPy execution:**
-```python
-if __name__ == "__main__":
-    main(module="python")
+Examples:
+
+- Default (Tcl/HLT):
+```bash
+python cfg.py
+# or explicitly
+python cfg.py --implementation tcl
 ```
 
-**For Tcl/HLT execution:**
-```python
-if __name__ == "__main__":
-    main(module="tcl")
+- Python (HLPy):
+```bash
+python cfg.py --implementation python
 ```
 
-**For Tcl/HLT execution:**
-```python
-if __name__ == "__main__":
-    main(module="isolated_tcl")
+- Isolated Tcl/HLT:
+```bash
+python cfg.py --implementation isolated_tcl
 ```
 
 ### Example Output (Tcl/HLT Mode)
 
-When running with `module="tcl"`, the output shows HLT running in the background:
+When running with `implementation="tcl"`, the output shows HLT running in the background:
 
 ```
 python3 ./cfg.py
@@ -65,10 +66,10 @@ result =  {status 1} {log {}} {stream_id TI0-HL-L2} {traffic_item ::ixNet::OBJ-/
 
 ### Example Output (Python/HLPy Mode)
 
-When running with `module="python"`, the output shows HLPy running with Python dictionaries:
+When running with `implementation="python"`, the output shows HLPy running with Python dictionaries:
 
 ```
-python3 ./cfg.py
+python3 ./cfg.py -impl python 
 ixiatcl:info: Tcl version: 8.6.12
 /opt/ixia/ixnetwork/26.0.2601.6/lib/TclApi/ /opt/ixia/hlapi/26.0.2601.5/ /usr/share/tcltk/tcl8.6 /usr/share/tcltk /usr/lib /usr/local/lib/tcltk /usr/local/share/tcltk /usr/lib/tcltk/x86_64-linux-gnu /usr/lib/tcltk /usr/lib/tcltk/tcl8.6
 Tcl 8.6 is installed on 64bit architecture.
@@ -99,10 +100,10 @@ Done
 
 ### Example Output (Isolated TCL/ HLT mode)
 
-When running with `module="isolated_tcl"`, the output showcases commands are sent to some isolated envs which execute the commands:
+When running with `implementation="isolated_tcl"`, the output showcases commands are sent to some isolated envs which execute the commands:
 
 ```
-python3 cfg.py      
+python3 cfg.py -impl isolated_tcl    
 b'{"message":"Tcl package initialized"}\n'
 
 
