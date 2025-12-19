@@ -5,6 +5,20 @@ Repo just to demonestrate a small POC for conversion of a simple HLT (**H**igh *
 
 This proof-of-concept demonstrates how you user can switch between HLT and HLPy implementations by simply changing the helper functions. The main configuration code remains unchanged - only the underlying helper implementation needs to be swapped to transition from HLT to HLPy usage.
 
+## How to build and run the Docker for the POC
+
+To build the docker:
+
+```bash
+docker build -t keysight-hlt-server .
+```
+
+To run the docker:
+
+```bash
+docker run -i -d --network host keysight-hlt-server:latest
+```
+
 ## How to Run
 
 To test the POC, simply run the configuration file:
