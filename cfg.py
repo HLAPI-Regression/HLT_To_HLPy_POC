@@ -6,6 +6,8 @@ Supports both Python and Tcl execution modes.
 """
 
 from tkinter import Tcl, TclError
+import argparse
+
 from helper import init_hl_package, execute_python, execute_tcl, execute_tcl_endpoint
 
 
@@ -39,4 +41,9 @@ def main(module):
 
 
 if __name__ == "__main__":
-    main(module="isolated_tcl")
+    parser = argparse.ArgumentParser(description="Run cfg with chosen execution module (tcl or python).")
+    parser.add_argument("-impl", "--implementation", choices=["tcl", "python", "isolated_tcl"], default="tcl",
+                        help="Execution mode: 'tcl' (default), 'python' (HLPy), or 'isolated_tcl'.")
+    args = parser.parse_args()
+
+    main(module=args.implementation)
