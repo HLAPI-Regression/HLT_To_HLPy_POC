@@ -5,7 +5,7 @@ Repo just to demonestrate a small POC for conversion of a simple HLT (**H**igh *
 
 This proof-of-concept demonstrates how you user can switch between HLT and HLPy implementations by simply changing the helper functions. The main configuration code remains unchanged - only the underlying helper implementation needs to be swapped to transition from HLT to HLPy usage.
 
-## How to build and run the Docker for the POC
+## How to build and run the Docker for isolated TCL mode
 
 To build the docker:
 
