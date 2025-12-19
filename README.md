@@ -1,7 +1,7 @@
 # HLT_To_HLPy_POC
 **1st POC**: sample conversion of a simple HLT (**H**igh **L**evel **T**CL ) scripts to HLPy (**H**igh **L**evel **Py**thon) scripts without much change.
 
-**2nd POC**: Ixia-specific TCL calls from the test automation infrastructure are encapsulated in REST requests and executed in an isolated environment. This environment is a Dockerized system running IxNetwork HLT, where TCL is required only inside the container—not on the base system hosting test infrastructure.
+**2nd POC**: Ixia-specific TCL (HLT) calls from the test automation infrastructure are encapsulated in REST requests and executed in an isolated environment. This environment is a Dockerized system running IxNetwork HLT, where TCL is required only inside the container—not on the base system hosting test infrastructure.
 
 ## How to build and run the Docker for isolated TCL mode
 
