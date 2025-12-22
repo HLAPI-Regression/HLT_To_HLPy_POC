@@ -112,7 +112,7 @@ Done
 
 ### Example Output (Isolated TCL/ HLT mode)
 
-![isolate Env architecture](image.png)
+![Isolated Tcl Env](image.png)
 
 When running with `implementation="isolated_tcl"`, the output showcases commands are sent to some isolated envs which execute the commands:
 
