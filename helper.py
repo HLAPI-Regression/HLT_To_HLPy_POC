@@ -94,6 +94,31 @@ def init_hl_package(module: str):
         else:
             print(resp.content)
 
+def get_procs_from_namespace(module:str, namespace: str):
+    """Get list of procedures from a namespace.
+    
+    Args:
+        module: The module type ("isolated_tcl", "python", or "tcl").
+        namespace: The namespace to query.
+        
+    Returns:
+        List of procedure names in the namespace.
+        
+    Raises:
+        Exception: If the module is not "isolated_tcl" (not yet supported).
+    """
+    if module != "isolated_tcl":
+        raise Exception(f"Module '{module}' is not supported yet")
+    
+    # For isolated_tcl, make a GET request to the /dir endpoint
+    resp = requests.get(server + "/dir", params={"namespace": namespace}, headers=headers)
+    if resp.status_code != 200:
+        raise Exception(f"Failed to get procs from namespace '{namespace}': {resp.text}")
+    
+    data = resp.json()
+    return data.get("procs", [])
+
+
 def get_hlapi_method(name_space: str, func: str):
     """Retrieve a method from the specified HLAPI namespace.
     

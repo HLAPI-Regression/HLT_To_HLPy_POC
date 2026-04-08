@@ -71,3 +71,16 @@ def eval_cmd(cmd) -> str:
     except TclError as e:
         log_error("Error evaluating Tcl command '%s': %s", cmd, e)
         raise
+
+
+def list_tcl_procs(namespace: str) -> list:
+    """List all procs available in a Tcl namespace.
+
+    Args:
+        namespace: e.g. "ixia" or "ixiangpf"
+
+    Returns:
+        List of procedure names in that namespace.
+    """
+    result = eval_cmd(f"namespace inscope ::{namespace} info procs *")
+    return result.split()

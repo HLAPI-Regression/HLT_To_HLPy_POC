@@ -17,7 +17,7 @@ COPY ./*.py .
 COPY ./server .
  
 # Download and install IxNetwork API silently
-RUN wget https://downloads.ixiacom.com/support/downloads_and_updates/public/IxNetwork/26.0.0/26.0.2601.6/IxNetworkAPI26.0.2601.6Linux64.bin.tgz
+RUN wget --no-check-certificate https://downloads.ixiacom.com/support/downloads_and_updates/public/IxNetwork/26.0.0/26.0.2601.6/IxNetworkAPI26.0.2601.6Linux64.bin.tgz
 RUN tar -xvzf IxNetworkAPI26.0.2601.6Linux64.bin.tgz
 RUN chmod +x IxNetworkAPI26.0.2601.6Linux64.bin
 RUN ./IxNetworkAPI26.0.2601.6Linux64.bin -i silent
