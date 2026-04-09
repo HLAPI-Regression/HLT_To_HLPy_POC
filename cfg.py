@@ -34,12 +34,13 @@ def main(module):
     print("\n\n")
     result = execute("::ixia::connect", "-ixnetwork_tcl_server 10.39.47.41:8014 -device xgshs-606488.ccu.is.keysight.com -port_list {2/3 2/4} -break_locks 1 -reset 1")
     print("result = ", result)
-    print("type(result) = ", type(result))
+    assert type(result) == dict and result.get("status") == 1, f"Failed to connect: {result}"
 
 
     print("\n\n")
     result = execute("::ixia::traffic_config", "-mode create -traffic_generator ixnetwork -circuit_type raw -name HL-L2 -endpointset_count 1 -emulation_src_handle {1/2/3} -emulation_dst_handle {1/2/4} -src_dest_mesh one_to_one -route_mesh one_to_one -bidirectional 1 -rate_percent 10 -frame_size 512")
     print("result = ", result)
+    assert type(result) == dict and result.get("status") == 1, f"Failed to configure traffic: {result}"
     print("Done")
 
 

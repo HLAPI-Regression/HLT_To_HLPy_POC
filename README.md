@@ -11,6 +11,12 @@ To build the docker:
 docker build -t keysight-hlt-server .
 ```
 
+To build with a specific pyATS version:
+
+```bash
+docker build --build-arg PYATS_VERSION=26.3 -t keysight-hlt-server .
+```
+
 To run the docker:
 
 ```bash

@@ -1,6 +1,7 @@
 # Use the Ubuntu 24.04 base image
 FROM ubuntu:24.04
 ARG DEBIAN_FRONTEND=noninteractive
+ARG PYATS_VERSION=26.3
 ENV TZ=US/Pacific
  
 # Update and install necessary packages
@@ -37,6 +38,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install -r /opt/ixia/ixnetwork/26.0.2601.6/lib/PythonApi/requirements.txt
 RUN python3 -m pip install flask gunicorn
+RUN python3  -m pip install pyats==${PYATS_VERSION}
+RUN python3  -m pip install pyats.tcl==${PYATS_VERSION}
 
 # Set API library paths
 
