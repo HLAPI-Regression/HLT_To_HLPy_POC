@@ -1,9 +1,27 @@
 import logging
 import os
+import subprocess
 from logging.handlers import RotatingFileHandler
 from flask import Flask, request, jsonify
 from pyats.tcl import TclError
 from tcl_helper import init_tcl, eval_cmd, get_tcl, list_tcl_procs
+
+
+def source_env(script_path="/opt/setup_ixia_env.sh"):
+    """Source a bash script and import its exported environment variables."""
+    if not os.path.isfile(script_path):
+        return
+    result = subprocess.run(
+        ["bash", "-c", f"source {script_path} && env"],
+        capture_output=True, text=True,
+    )
+    for line in result.stdout.splitlines():
+        key, _, value = line.partition("=")
+        if key and value:
+            os.environ[key] = value
+
+
+source_env()
 
 
 # Configure logger for the server
