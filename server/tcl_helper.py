@@ -1,7 +1,7 @@
 import sys, os
 import threading
 import logging
-from tkinter import Tcl, TclError
+from pyats.tcl import Interpreter, TclError
 
 # Logger for tcl helper; uses the server logger namespace if present
 _logger = logging.getLogger("hlt_server.tcl_helper")
@@ -37,7 +37,7 @@ def init_tcl():
     with _global_lock:
         if _global_tcl is None:
             log_info("Initializing Tcl interpreter")
-            _global_tcl = Tcl()
+            _global_tcl = Interpreter()
             try:
                 _global_tcl.eval("package require Ixia")
                 log_info("Tcl package 'Ixia' required successfully")
@@ -55,8 +55,12 @@ def get_tcl():
     return _global_tcl
 
 
-def eval_cmd(cmd) -> str:
+def eval_cmd(cmd, cast_to_list=True) -> str:
     """Eval a Tcl command and return its result.
+
+    Args:
+        cmd: The Tcl command to evaluate
+        cast_to_list: If True, attempt to cast result to keyed list (default: True)
 
     Accepts either `eval_cmd(cmd)` — which uses the global interpreter —
     or `eval_cmd(tcl, cmd)` for callers that pass an explicit Tcl instance.
@@ -67,7 +71,30 @@ def eval_cmd(cmd) -> str:
     try:
         result = tcl.eval(cmd)
         log_debug("Eval result: %s", result)
-        return result
+        
+        if not cast_to_list:
+            return result
+            
+        try:
+            klist = tcl.cast_keyed_list(
+                result, item_cast=tcl.cast_any)
+            return klist
+        except (TypeError, ValueError) as e:
+            log_error("Failed to cast result '%s' to keyed list: %s", result, sys.exc_info())
+            raise
     except TclError as e:
         log_error("Error evaluating Tcl command '%s': %s", cmd, e)
         raise
+
+
+def list_tcl_procs(namespace: str) -> list:
+    """List all procs available in a Tcl namespace.
+
+    Args:
+        namespace: e.g. "ixia" or "ixiangpf"
+
+    Returns:
+        List of procedure names in that namespace.
+    """
+    result = eval_cmd(f"namespace inscope ::{namespace} info procs *", cast_to_list=False)
+    return result.split()

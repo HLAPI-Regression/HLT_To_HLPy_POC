@@ -8,7 +8,13 @@
 To build the docker:
 
 ```bash
-docker build -t keysight-hlt-server .
+docker build -t keysight-hlt-server --build-arg IXNET_URL=https://downloads.ixiacom.com/support/downloads_and_updates/public/IxNetwork/26.0.1/26.0.2620.9/IxNetworkAPI26.0.2620.9Linux64.bin.tgz .
+```
+
+To build with a specific pyATS and IxNetwork version:
+
+```bash
+docker build --build-arg PYATS_VERSION=26.3 --build-arg IXNET_URL=https://downloads.ixiacom.com/support/downloads_and_updates/public/IxNetwork/26.0.1/26.0.2620.9/IxNetworkAPI26.0.2620.9Linux64.bin.tgz -t keysight-hlt-server .
 ```
 
 To run the docker:

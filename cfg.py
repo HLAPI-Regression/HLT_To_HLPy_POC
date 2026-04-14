@@ -8,7 +8,7 @@ Supports both Python and Tcl execution modes.
 from tkinter import Tcl, TclError
 import argparse
 
-from helper import init_hl_package, execute_python, execute_tcl, execute_tcl_endpoint
+from helper import init_hl_package, execute_python, execute_tcl, execute_tcl_endpoint, get_procs_from_namespace
 
 
 def main(module):
@@ -21,6 +21,8 @@ def main(module):
         module: The execution mode - either "tcl" or "python".
     """
     init_hl_package(module)
+    res = get_procs_from_namespace(module, "ixia")
+    print("first few functions:", res[:5])
     # monkey patch execute function based on the module
     if module == "tcl":
         execute = execute_tcl
@@ -30,13 +32,15 @@ def main(module):
         execute = execute_tcl_endpoint
 
     print("\n\n")
-    result = execute("::ixia::connect", "-ixnetwork_tcl_server 10.39.47.41:8012 -device xgshs-606488.ccu.is.keysight.com -port_list {2/1 2/2} -break_locks 1 -reset 1")
+    result = execute("::ixia::connect", "-ixnetwork_tcl_server 10.39.47.41:8014 -device xgshs-606488.ccu.is.keysight.com -port_list {2/3 2/4} -break_locks 1 -reset 1")
     print("result = ", result)
+    assert type(result) == dict and result.get("status") == 1, f"Failed to connect: {result}"
 
 
     print("\n\n")
-    result = execute("::ixia::traffic_config", "-mode create -traffic_generator ixnetwork -circuit_type raw -name HL-L2 -endpointset_count 1 -emulation_src_handle {1/2/1} -emulation_dst_handle {1/2/2} -src_dest_mesh one_to_one -route_mesh one_to_one -bidirectional 1 -rate_percent 10 -frame_size 512")
+    result = execute("::ixia::traffic_config", "-mode create -traffic_generator ixnetwork -circuit_type raw -name HL-L2 -endpointset_count 1 -emulation_src_handle {1/2/3} -emulation_dst_handle {1/2/4} -src_dest_mesh one_to_one -route_mesh one_to_one -bidirectional 1 -rate_percent 10 -frame_size 512")
     print("result = ", result)
+    assert type(result) == dict and result.get("status") == 1, f"Failed to configure traffic: {result}"
     print("Done")
 
 

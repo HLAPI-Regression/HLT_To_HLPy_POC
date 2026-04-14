@@ -1,8 +1,28 @@
 import logging
 import os
+import subprocess
 from logging.handlers import RotatingFileHandler
 from flask import Flask, request, jsonify
-from tcl_helper import init_tcl, eval_cmd, get_tcl
+from pyats.tcl import TclError
+from tcl_helper import init_tcl, eval_cmd, get_tcl, list_tcl_procs
+
+
+def source_env(script_path="/opt/setup_ixia_env.sh"):
+    """Source a bash script and import its exported environment variables."""
+    if not os.path.isfile(script_path):
+        return
+    result = subprocess.run(
+        ["bash", "-c", f"source {script_path} && env"],
+        capture_output=True, text=True,
+    )
+    for line in result.stdout.splitlines():
+        key, _, value = line.partition("=")
+        if key and value:
+            os.environ[key] = value
+
+
+source_env()
+
 
 # Configure logger for the server
 LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
@@ -11,7 +31,7 @@ LOG_FILE = os.path.join(LOG_DIR, "server.log")
 
 logger = logging.getLogger("hlt_server")
 if not logger.handlers:
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     fmt = logging.Formatter(
         "%(asctime)s %(levelname)-8s %(name)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
@@ -35,8 +55,31 @@ def read_root():
 
 @app.route("/init", methods=["POST"])
 def init():
-    init_tcl()
-    return jsonify(message="Tcl package initialized")
+    try:
+        init_tcl()
+        return jsonify(message="Tcl package initialized")
+    except TclError as e:
+        logger.error("TclError during init: %s", e)
+        return jsonify(error=f"Tcl error: {str(e)}"), 500
+    except Exception as e:
+        logger.error("Unexpected error during init: %s", e, exc_info=True)
+        return jsonify(error=f"Unexpected error: {str(e)}"), 500
+
+
+@app.route("/dir", methods=["GET"])
+def dir_namespace():
+    namespace = request.args.get("namespace")
+    if not namespace:
+        return jsonify(error="Missing 'namespace' query parameter"), 400
+    try:
+        procs = list_tcl_procs(namespace)
+        return jsonify(namespace=namespace, procs=procs)
+    except TclError as e:
+        logger.error("TclError listing procs in namespace '%s': %s", namespace, e)
+        return jsonify(error=f"Tcl error: {str(e)}"), 500
+    except Exception as e:
+        logger.error("Unexpected error listing procs: %s", e, exc_info=True)
+        return jsonify(error=f"Unexpected error: {str(e)}"), 500
 
 
 # Define an execute endpoint
@@ -49,8 +92,15 @@ def execute():
     if not command:
         return jsonify(error="Missing 'command' in JSON body, form or query"), 400
     logger.info("Executing command: %s", command)
-    result = eval_cmd(command)
-    return jsonify(message=f"Executing {command}", result=result)
+    try:
+        result = eval_cmd(command)
+        return jsonify(message=f"Executing {command}", result=result)
+    except TclError as e:
+        logger.error("TclError executing command '%s': %s", command, e)
+        return jsonify(error=f"Tcl error: {str(e)}"), 500
+    except Exception as e:
+        logger.error("Unexpected error executing command: %s", e, exc_info=True)
+        return jsonify(error=f"Unexpected error: {str(e)}"), 500
 
 
 if __name__ == "__main__":
